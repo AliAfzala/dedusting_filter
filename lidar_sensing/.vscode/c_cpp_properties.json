@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ali/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ali/catkin_ws/src/lidar_sensing/include/**",
+        "/home/ali/catkin_ws/src/velodyne/velodyne/velodyne_driver/include/**",
+        "/home/ali/catkin_ws/src/velodyne/velodyne/velodyne_laserscan/include/**",
+        "/home/ali/catkin_ws/src/velodyne/velodyne/velodyne_pcl/include/**",
+        "/home/ali/catkin_ws/src/velodyne/velodyne/velodyne_pointcloud/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
