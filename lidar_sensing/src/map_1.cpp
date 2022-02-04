@@ -10,6 +10,7 @@
   #include <pcl/point_cloud.h>
   #include <pcl/point_types.h>
   #include <pcl/filters/voxel_grid.h>
+  #include <pcl/filters/radius_outlier_removal.h>
 
   // Include PointCloud2 message
   #include <sensor_msgs/PointCloud2.h>
@@ -31,11 +32,22 @@
     // Convert to PCL data type
     pcl_conversions::toPCL(*cloud_msg, *cloud);
 
-    // Perform the actual filtering
+    // Perform the actual filtering:Voxel Grid
+    /*
     pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
     sor.setInputCloud (cloudPtr);
     sor.setLeafSize (0.1, 0.1, 0.1);
     sor.filter (cloud_filtered);
+    */
+
+   // Perform the actual filter: ROR
+   pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2> outrem;
+   outrem.setInputCloud(cloudPtr);
+   outrem.setRadiusSearch(0.8);
+   outrem.setMinNeighborsInRadius (2);
+   outrem.setKeepOrganized(true);
+    // apply filter
+   outrem.filter (cloud_filtered);
 
     // Convert to ROS data type
     sensor_msgs::PointCloud2 output;
@@ -55,10 +67,10 @@
     ROS_INFO_STREAM("Hello from ROS Node: " << ros::this_node::getName());
 
     // Create a ROS Subscriber to IMAGE_TOPIC with a queue_size of 1 and a callback function to cloud_cb
-    ros::Subscriber sub = nh.subscribe(IMAGE_TOPIC, 1, cloud_cb);
+    ros::Subscriber sub = nh.subscribe(IMAGE_TOPIC, 10, cloud_cb);
 
     // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
-    pub = nh.advertise<sensor_msgs::PointCloud2>(PUBLISH_TOPIC, 1);
+    pub = nh.advertise<sensor_msgs::PointCloud2>(PUBLISH_TOPIC, 10);
 
     // Spin
     ros::spin();
