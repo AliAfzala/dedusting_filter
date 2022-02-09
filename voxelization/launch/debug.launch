@@ -1,0 +1,3 @@
+<launch>
+    <node pkg = "voxelization" type= "voxel_node" name="voxel_node" />
+</launch>
