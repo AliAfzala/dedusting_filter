@@ -9,6 +9,7 @@
 #include <vector>
   // Include PointCloud2 message
 #include <sensor_msgs/PointCloud2.h>
+#include <ros/console.h>
 
 
 
@@ -38,9 +39,10 @@ int main (int argc, char** argv)
     (*cloud)[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
     (*cloud)[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
     (*cloud)[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    ROS_INFO_STREAM("Points inside the voxel: " << " x=" << (*cloud)[i].x << "y=" << (*cloud)[i].y) ;
   }
 
-  float resolution = 128.0f;
+  float resolution = 500.0f;
   pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree (resolution);
 
   octree.setInputCloud (cloud);
@@ -62,9 +64,12 @@ int main (int argc, char** argv)
      << std::endl;
               
     for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
+    {
    std::cout << "    " << (*cloud)[pointIdxVec[i]].x 
        << " " << (*cloud)[pointIdxVec[i]].y 
        << " " << (*cloud)[pointIdxVec[i]].z << std::endl;
+      ROS_INFO_STREAM("Points inside the voxel: " << " x=" << (*cloud)[pointIdxVec[i]].x << "y=" << (*cloud)[pointIdxVec[i]].y) ;
+    }
   }
     
 
@@ -76,7 +81,7 @@ int main (int argc, char** argv)
     
     //pub.publish (sensor_msgs::PointCloud2);
     
-    ros::spinOnce;
+    ros::spin();
 
     // Success
     return 0;
