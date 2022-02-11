@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ali/catkin_ws/src/dedusting_filter/voxelization/voxel/practice_eigen.cpp
+eigen3/Eigen/Dense
+-
+iostream
+-
+eigen3/Eigen/Eigenvalues
+-
+chrono
+-
+

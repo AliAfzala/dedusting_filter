@@ -9,3 +9,7 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 add_executable (octree_search octree_search.cpp)
 target_link_libraries (octree_search ${PCL_LIBRARIES})
+
+
+add_executable (practice_eigen practice_eigen.cpp)
+target_link_libraries (practice_eigen ${PCL_LIBRARIES})

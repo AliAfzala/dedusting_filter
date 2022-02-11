@@ -40,7 +40,7 @@ int main (int argc, char** argv)
   }
   */
 
-  float resolution = 0.2f;
+  float resolution = 0.25f;
   //pcl::octree::OctreePointCloudPointVector<pcl::PointXYZ> octree (resolution);
   pcl::octree::OctreePointCloudSearch<pcl::PointXYZI> octree (resolution);
   //octree.defineBoundingBox (-10.0 , 0.0 ,  -3.0 ,  20.0 ,  20.0 ,  3.0);
