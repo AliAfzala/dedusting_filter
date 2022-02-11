@@ -7,6 +7,10 @@
 #include"eigen3/Eigen/Dense"
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/crop_box.h>
+#include <eigen3/Eigen/Dense>
+#include<eigen3/Eigen/Eigenvalues>
+
+using namespace Eigen;
 
 int main (int argc, char** argv)
   {
@@ -15,7 +19,7 @@ int main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZI>);
   pcl::io::loadPCDFile <pcl::PointXYZI> ("dust-5m-4m-Frame77.pcd", *cloud1); 
-
+  
 
   double minX = -10; double minY = 0; double minZ = -3;
   double maxX = 20 ; double maxY = 20 ; double maxZ = 3 ;
@@ -74,15 +78,47 @@ int main (int argc, char** argv)
   //for (std::size_t j = 0; j < searchPoint.size (); ++j)
   for (int j = 0; j < 100; ++j)
   {
-    if (octree.voxelSearch (searchPoint[j], pointIdxVec))
+    if ( (octree.voxelSearch (searchPoint[j], pointIdxVec)) && (pointIdxVec.size() > 3))
       {
-        std::cout << "Neighbors within voxel search at (" << searchPoint[j].x 
+        
+        int sz = searchPoint.size();
+        Matrix<float,Dynamic,3> voxel_points;
+        //voxel_points.resize(sz,3);  
+        //VectorXd voxel_intensity ; 
+        Matrix<float,Dynamic,1> voxel_intensity;
+        //voxel_intensity.resize(sz,1);
+
+        
+        for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
+            {
+            voxel_points.resize(i+1,3);
+            voxel_intensity.resize(i+1,1); 
+            //std::cout<<i<< std::endl;
+            voxel_points (i,0) = (*cloud)[pointIdxVec[i]].x ; 
+            //std::cout<< " Hello World!" << std::endl;
+            voxel_points(i,1) =float( (*cloud)[pointIdxVec[i]].y ) ;
+            voxel_points(i,2)= float ( (*cloud)[pointIdxVec[i]].z);
+            //std::cout<< " Hello World!" << std::endl;
+            voxel_intensity (i,0) = (*cloud)[pointIdxVec[i]].intensity;
+            
+            
+            
+           
+            } 
+
+        /*std::cout << "Neighbors within voxel search at (" << searchPoint[j].x 
         << " " << searchPoint[j].y 
         << " " << searchPoint[j].z << ")" 
         << std::endl;
         std::cout<< " iteration over voxel number:"<< ii<<std::endl;
-        
-              
+        std::cout<< " Points inside the voxel "<< pointIdxVec.size() << std::endl;
+        */
+
+        /*EigenSolver< Matrix<double,Dynamic,3> > es(voxel_points);      
+        MatrixXd D = es.pseudoEigenvalueMatrix();
+        MatrixXd V = es.pseudoEigenvectors();
+        int col_index, row_index;
+        std::cout << D.maxCoeff(&row_index, &col_index) << std::endl;  */
          /* for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
             std::cout << "    " << (*cloud)[pointIdxVec[i]].x 
@@ -90,13 +126,15 @@ int main (int argc, char** argv)
             << " " << (*cloud)[pointIdxVec[i]].z << std::endl;
 
             } */
+            
         }
       ii++;
-      std::cout<< " Points inside the voxel "<< pointIdxVec.size() << std::endl;
+      
       pointIdxVec.clear();
   }
   std::cout<< " the size of voxel center vector is  " << searchPoint.size()<< std::endl;
-  std::cout<< " the voxel resolution is " << octree.getResolution() << std::endl;
+  std::cout<< " the size of voxel having point more than 3 " <<  ii << std::endl;
+  //std::cout<< " the size of voxel having point more than 3 " << octree.getResolution() << std::endl;
     // Success
     return 0;
   }

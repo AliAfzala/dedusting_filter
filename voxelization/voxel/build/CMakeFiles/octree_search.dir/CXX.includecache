@@ -25,6 +25,10 @@ pcl/io/pcd_io.h
 -
 pcl/filters/crop_box.h
 -
+eigen3/Eigen/Dense
+-
+eigen3/Eigen/Eigenvalues
+-
 
 /usr/include/eigen3/Eigen/Cholesky
 Core
