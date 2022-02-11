@@ -72,7 +72,7 @@ int main (int argc, char** argv)
  //int sz = searchPoint.size();
   int ii = 1;
   //for (std::size_t j = 0; j < searchPoint.size (); ++j)
-  for (int j = 0; j < 1; ++j)
+  for (int j = 0; j < 100; ++j)
   {
     if (octree.voxelSearch (searchPoint[j], pointIdxVec))
       {
@@ -81,16 +81,19 @@ int main (int argc, char** argv)
         << " " << searchPoint[j].z << ")" 
         << std::endl;
         std::cout<< " iteration over voxel number:"<< ii<<std::endl;
+        
               
-          for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
+         /* for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
             std::cout << "    " << (*cloud)[pointIdxVec[i]].x 
             << " " << (*cloud)[pointIdxVec[i]].y 
             << " " << (*cloud)[pointIdxVec[i]].z << std::endl;
 
-            }
+            } */
         }
       ii++;
+      std::cout<< " Points inside the voxel "<< pointIdxVec.size() << std::endl;
+      pointIdxVec.clear();
   }
   std::cout<< " the size of voxel center vector is  " << searchPoint.size()<< std::endl;
   std::cout<< " the voxel resolution is " << octree.getResolution() << std::endl;
