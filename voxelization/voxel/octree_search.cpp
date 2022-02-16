@@ -91,8 +91,8 @@ int main (int argc, char** argv)
         
         for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
-            voxel_points.resize(i+1,3);
-            voxel_intensity.resize(i+1,1); 
+            voxel_points.conservativeResize(i+1,3);
+            voxel_intensity.conservativeResize(i+1,1); 
             //std::cout<<i<< std::endl;
             voxel_points (i,0) = (*cloud)[pointIdxVec[i]].x ; 
             //std::cout<< " Hello World!" << std::endl;
@@ -105,6 +105,9 @@ int main (int argc, char** argv)
             
            
             } 
+            std::cout << "start" << std::endl;
+            std::cout << voxel_points << std::endl;
+            std::cout << "end" << std::endl;
 
         /*std::cout << "Neighbors within voxel search at (" << searchPoint[j].x 
         << " " << searchPoint[j].y 
@@ -114,11 +117,11 @@ int main (int argc, char** argv)
         std::cout<< " Points inside the voxel "<< pointIdxVec.size() << std::endl;
         */
 
-        /*EigenSolver< Matrix<double,Dynamic,3> > es(voxel_points);      
-        MatrixXd D = es.pseudoEigenvalueMatrix();
-        MatrixXd V = es.pseudoEigenvectors();
+        /*EigenSolver< Matrix<float,Dynamic,3> > es(voxel_points*voxel_points.transpose());      
+        MatrixXf D = es.pseudoEigenvalueMatrix();
+        MatrixXf V = es.pseudoEigenvectors();
         int col_index, row_index;
-        std::cout << D.maxCoeff(&row_index, &col_index) << std::endl;  */
+        std::cout << D.maxCoeff(&row_index, &col_index) << std::endl; */ 
          /* for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
             std::cout << "    " << (*cloud)[pointIdxVec[i]].x 
