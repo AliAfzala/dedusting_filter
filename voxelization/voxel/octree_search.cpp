@@ -105,23 +105,19 @@ int main (int argc, char** argv)
             
            
             } 
+            /*
             std::cout << "start" << std::endl;
             std::cout << voxel_points << std::endl;
             std::cout << "end" << std::endl;
+            */
 
-        /*std::cout << "Neighbors within voxel search at (" << searchPoint[j].x 
-        << " " << searchPoint[j].y 
-        << " " << searchPoint[j].z << ")" 
-        << std::endl;
-        std::cout<< " iteration over voxel number:"<< ii<<std::endl;
-        std::cout<< " Points inside the voxel "<< pointIdxVec.size() << std::endl;
-        */
 
-        /*EigenSolver< Matrix<float,Dynamic,3> > es(voxel_points*voxel_points.transpose());      
+        EigenSolver< Matrix<float,Dynamic,3> > es(voxel_points.transpose()*voxel_points);      
         MatrixXf D = es.pseudoEigenvalueMatrix();
         MatrixXf V = es.pseudoEigenvectors();
-        int col_index, row_index;
-        std::cout << D.maxCoeff(&row_index, &col_index) << std::endl; */ 
+        std::cout << " EigenValueMatrix starts"<< std::endl;
+        std::cout << D << std::endl;
+        //std::cout << V << std::endl;
          /* for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
             std::cout << "    " << (*cloud)[pointIdxVec[i]].x 
