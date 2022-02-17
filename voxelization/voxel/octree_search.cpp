@@ -4,11 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <pcl/octree/octree_pointcloud_pointvector.h>
-#include"eigen3/Eigen/Dense"
+#include <eigen3/Eigen/Dense>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/crop_box.h>
-#include <eigen3/Eigen/Dense>
 #include<eigen3/Eigen/Eigenvalues>
+#include<cmath>
+#include<iterator>
+#include<algorithm>
 
 using namespace Eigen;
 
@@ -73,6 +75,7 @@ int main (int argc, char** argv)
   */
  
  std::vector<int> pointIdxVec;
+ std::vector<int> voxel_intensity;
  //int sz = searchPoint.size();
   int ii = 1;
   //for (std::size_t j = 0; j < searchPoint.size (); ++j)
@@ -82,27 +85,25 @@ int main (int argc, char** argv)
       {
         
         int sz = searchPoint.size();
-        Matrix<float,Dynamic,3> voxel_points;
+        Matrix<double,Dynamic,3> voxel_points;
         //voxel_points.resize(sz,3);  
         //VectorXd voxel_intensity ; 
-        Matrix<float,Dynamic,1> voxel_intensity;
+        //Matrix<float,Dynamic,1> voxel_intensity;
         //voxel_intensity.resize(sz,1);
 
         
         for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
             voxel_points.conservativeResize(i+1,3);
-            voxel_intensity.conservativeResize(i+1,1); 
+            //voxel_intensity.conservativeResize(i+1,1); 
             //std::cout<<i<< std::endl;
             voxel_points (i,0) = (*cloud)[pointIdxVec[i]].x ; 
             //std::cout<< " Hello World!" << std::endl;
-            voxel_points(i,1) =float( (*cloud)[pointIdxVec[i]].y ) ;
-            voxel_points(i,2)= float ( (*cloud)[pointIdxVec[i]].z);
+            voxel_points(i,1) =( (*cloud)[pointIdxVec[i]].y ) ;
+            voxel_points(i,2)= ( (*cloud)[pointIdxVec[i]].z);
             //std::cout<< " Hello World!" << std::endl;
-            voxel_intensity (i,0) = (*cloud)[pointIdxVec[i]].intensity;
-            
-            
-            
+            //voxel_intensity (i,0) = (*cloud)[pointIdxVec[i]].intensity;
+            voxel_intensity.push_back((*cloud)[pointIdxVec[i]].intensity);
            
             } 
             /*
@@ -112,12 +113,21 @@ int main (int argc, char** argv)
             */
 
 
-        EigenSolver< Matrix<float,Dynamic,3> > es(voxel_points.transpose()*voxel_points);      
-        MatrixXf D = es.pseudoEigenvalueMatrix();
-        MatrixXf V = es.pseudoEigenvectors();
-        std::cout << " EigenValueMatrix starts"<< std::endl;
-        std::cout << D << std::endl;
+        
+        EigenSolver< Matrix<double,Dynamic,3> > es(voxel_points.transpose()*voxel_points);      
+        MatrixXd D = es.pseudoEigenvalueMatrix();
+        MatrixXd V = es.pseudoEigenvectors();  
+
+        double voxel_roughness = std::abs(D(2,2)); 
+        double voxel_slope = std::sin( V(2,2)/ V.col(2).norm() );
+        std::cout << " Voxel number " << ii << std::endl; 
+        std::cout << " Voxel roughness is:  " << voxel_roughness << std::endl ;  
+        std::cout << " Voxel slope is:  "<< voxel_slope << std::endl ;
+        //std::cout << " EigenValueMatrix starts"<< std::endl;
+        //std::cout << D << std::endl;
         //std::cout << V << std::endl;
+
+        
          /* for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
             {
             std::cout << "    " << (*cloud)[pointIdxVec[i]].x 
@@ -125,14 +135,20 @@ int main (int argc, char** argv)
             << " " << (*cloud)[pointIdxVec[i]].z << std::endl;
 
             } */
-            
+          double sum = std::accumulate(voxel_intensity.begin(), voxel_intensity.end(), 0.0);
+          double voxel_intensity_mean = sum / voxel_intensity.size();
+          double sq_sum = std::inner_product(voxel_intensity.begin(), voxel_intensity.end(), voxel_intensity.begin(), 0.0);
+          double voxel_intensity_std = std::sqrt(sq_sum / voxel_intensity.size() - voxel_intensity_mean *voxel_intensity_mean);
+          std::cout << " Voxel mean intensity is:  " << voxel_intensity_mean << std::endl ;
+          std::cout << " Voxel std intensity is:  " << voxel_intensity_std << std::endl ;
+          pointIdxVec.clear();
         }
       ii++;
       
-      pointIdxVec.clear();
+      
   }
-  std::cout<< " the size of voxel center vector is  " << searchPoint.size()<< std::endl;
-  std::cout<< " the size of voxel having point more than 3 " <<  ii << std::endl;
+  //std::cout<< " the size of voxel center vector is  " << searchPoint.size()<< std::endl;
+  //std::cout<< " the size of voxel having point more than 3 " <<  ii << std::endl;
   //std::cout<< " the size of voxel having point more than 3 " << octree.getResolution() << std::endl;
     // Success
     return 0;

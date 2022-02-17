@@ -20,14 +20,18 @@ vector
 pcl/octree/octree_pointcloud_pointvector.h
 -
 eigen3/Eigen/Dense
-/home/ali/catkin_ws/src/dedusting_filter/voxelization/voxel/eigen3/Eigen/Dense
+-
 pcl/io/pcd_io.h
 -
 pcl/filters/crop_box.h
 -
-eigen3/Eigen/Dense
--
 eigen3/Eigen/Eigenvalues
+-
+cmath
+-
+iterator
+-
+algorithm
 -
 
 /usr/include/eigen3/Eigen/Cholesky
