@@ -10,6 +10,7 @@
   // Include PointCloud2 message
 #include <sensor_msgs/PointCloud2.h>
 #include <ros/console.h>
+#include <pcl_ros/point_cloud.h>
 
 
 
@@ -25,7 +26,7 @@ int main (int argc, char** argv)
 
 
     // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
-    ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2>("voxel_topic", 10);
+    ros::Publisher pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ>>("voxel_topic", 10);
     // Code for creating voxels
 
     //pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
@@ -39,10 +40,10 @@ int main (int argc, char** argv)
     (*cloud)[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
     (*cloud)[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
     (*cloud)[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
-    ROS_INFO_STREAM("Points inside the voxel: " << " x=" << (*cloud)[i].x << "y=" << (*cloud)[i].y) ;
+    //ROS_INFO_STREAM("Points inside the voxel: " << " x=" << (*cloud)[i].x << "y=" << (*cloud)[i].y) ;
   }
 
-  float resolution = 500.0f;
+  /*float resolution = 500.0f;
   pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree (resolution);
 
   octree.setInputCloud (cloud);
@@ -71,18 +72,23 @@ int main (int argc, char** argv)
       ROS_INFO_STREAM("Points inside the voxel: " << " x=" << (*cloud)[pointIdxVec[i]].x << "y=" << (*cloud)[pointIdxVec[i]].y) ;
     }
   }
-    
-
-
-
-
+  */
     
     
     
-    //pub.publish (sensor_msgs::PointCloud2);
+    ros::Rate loop_rate(4);
+    while (nh.ok())
+    {
+    //pcl_conversions::toPCL(ros::Time::now(), cloud->header.stamp);
+    pcl::PCLPointCloud2 pcl_pc ; 
+    pcl::toPCLPointCloud2 (*cloud,pcl_pc) ; 
+    sensor_msgs::PointCloud2 pt2;
+    pcl_conversions::fromPCL (pcl_pc,pt2);
+    pub.publish (pt2);
     
-    ros::spin();
-
+    ros::spinOnce;
+    loop_rate.sleep ();
+    }
     // Success
     return 0;
   }
