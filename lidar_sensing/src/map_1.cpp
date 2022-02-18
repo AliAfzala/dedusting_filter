@@ -11,6 +11,7 @@
   #include <pcl/point_types.h>
   #include <pcl/filters/voxel_grid.h>
   #include <pcl/filters/radius_outlier_removal.h>
+  #include"lidar_sensing/dedusting.h"
 
   // Include PointCloud2 message
   #include <sensor_msgs/PointCloud2.h>
@@ -59,6 +60,8 @@
 
   int main (int argc, char** argv)
   {
+    //lidar_sensing::dedusting a;
+    //a.voxel_mean_intensity.push_back(1);
     // Initialize the ROS Node "roscpp_pcl_example"
     ros::init (argc, argv, "roscpp_pcl_example");
     ros::NodeHandle nh;

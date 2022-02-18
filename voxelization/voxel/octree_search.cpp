@@ -67,10 +67,10 @@ int main (int argc, char** argv)
  
  std::vector<int> pointIdxVec;
  std::vector<int> voxel_intensity;
-
+std::cout << searchPoint.size()<< std::endl;
   int ii = 1;
   //for (std::size_t j = 0; j < searchPoint.size (); ++j)
-  for (int j = 0; j < 100; ++j)
+  for (int j = 0; j < searchPoint.size(); ++j)
   {
     if ( (octree.voxelSearch (searchPoint[j], pointIdxVec)) && (pointIdxVec.size() > 3))
       {

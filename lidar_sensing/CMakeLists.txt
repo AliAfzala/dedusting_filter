@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
+  message_generation
 )
 
 add_executable(pcl_node src/map.cpp)
@@ -20,6 +21,9 @@ target_link_libraries(pcl_node ${catkin_LIBRARIES})
 
 add_executable(roscpp_pcl_example src/map_1.cpp)
 target_link_libraries(roscpp_pcl_example ${catkin_LIBRARIES})
+
+add_executable(feature_node src/feature_computation.cpp)
+target_link_libraries(feature_node ${catkin_LIBRARIES})
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -55,10 +59,17 @@ target_link_libraries(roscpp_pcl_example ${catkin_LIBRARIES})
 
 
 ## Generate added messages and services with any dependencies listed here
+ add_message_files(
+   FILES 
+   dedusting.msg
+ )
+
  generate_messages(
    DEPENDENCIES
    sensor_msgs
+   std_msgs
  )
+
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##

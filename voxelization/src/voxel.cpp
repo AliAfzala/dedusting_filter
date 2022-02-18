@@ -79,8 +79,9 @@ int main (int argc, char** argv)
     ros::Rate loop_rate(4);
     while (nh.ok())
     {
+      //https://answers.ros.org/question/152416/topcl-and-frompclpointcloud2/   Explanation about what pcl_conversions is:
     //pcl_conversions::toPCL(ros::Time::now(), cloud->header.stamp);
-    pcl::PCLPointCloud2 pcl_pc ; 
+    pcl::PCLPointCloud2 pcl_pc ;    // https://answers.ros.org/question/136916/conversion-from-sensor_msgspointcloud2-to-pclpointcloudt/
     pcl::toPCLPointCloud2 (*cloud,pcl_pc) ; 
     sensor_msgs::PointCloud2 pt2;
     pcl_conversions::fromPCL (pcl_pc,pt2);
