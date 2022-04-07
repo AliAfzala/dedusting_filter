@@ -1,0 +1,14 @@
+<!--
+    This launch file is for converting pcap file to bag.
+    To do this there are couple of steps:
+    1.Running rosbag node for recording velodyne_points 
+    2.Running velodyne_driver node
+    3. Running velodyne_points node
+-->
+<launch>
+
+
+    <node pkg="velodyne_driver" type="velodyne_node" name="velodyne_node"
+    args="_model:=VLP16 _pcap:=/home/ali/catkin_ws/src/dedusting_filter/lidar_sensing/Data/'Raw data'/a.pcap _read_once:=true" />
+    
+</launch>
