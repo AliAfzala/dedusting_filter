@@ -50,12 +50,15 @@ auto start = high_resolution_clock::now();
          << duration.count() << " microseconds" << endl;
 
  cout << "The pseudo-eigenvalue matrix D is:" << endl << D << endl;
+ cout << " The sum over diagnal is : " << D.cwiseAbs().diagonal().sum() << endl ; 
  cout << "The pseudo-eigenvector matrix V is:" << endl << V << endl;
+ 
  cout << "Finally, V * D * V^(-1) = " << endl << V * D * V.inverse() << endl;
 
 int col_index, row_index;
 cout << D.maxCoeff(&row_index, &col_index) << endl;
 cout << row_index << " " << col_index << endl;
+cout<< 1/2 << endl;
 
 }
 int main()

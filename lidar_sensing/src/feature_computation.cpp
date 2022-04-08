@@ -78,7 +78,7 @@ using namespace Eigen;
   {
     if ( (octree.voxelSearch (searchPoint[j], pointIdxVec)) && (pointIdxVec.size() > 3))
       {
-        
+        float distance = sqrt(std::pow(searchPoint[j].x,2) + std::pow(searchPoint[j].y,2)) ;
         int sz = pointIdxVec.size();
         //std::cout<< " number of points inside voxel is " << sz << std::endl ; 
         Matrix<double,Dynamic,3> voxel_points;
@@ -114,8 +114,12 @@ using namespace Eigen;
         
         features.voxel_mean_intensity.push_back(voxel_intensity_mean);
         features.voxel_std_intensity.push_back(voxel_intensity_std);
-        features.voxel_slope.push_back(voxel_slope);
-        features.voxel_roughness.push_back(voxel_roughness);
+        features.voxel_eigen3OverEigen1.push_back(D(2,2)/D(0,0));
+        features.voxel_eigen2OverEigen1.push_back(D(1,1)/D(0,0));
+        features.voxel_eigen1OverSumEigen.push_back(D(0,0)/D.cwiseAbs().diagonal().sum());
+        features.voxel_numberOverDis.push_back(sz/distance);
+        //features.voxel_slope.push_back(voxel_slope);
+        //features.voxel_roughness.push_back(voxel_roughness);
 
         pointIdxVec.clear();
 

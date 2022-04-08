@@ -4,11 +4,23 @@
     1.Running rosbag node for recording velodyne_points 
     2.Running velodyne_driver node
     3. Running velodyne_points node
+        <node pkg="velodyne_driver" type="velodyne_node" name="velodyne_node"
+    args="_model:=VLP16 _pcap:=/home/ali/catkin_ws/src/dedusting_filter/lidar_sensing/Data/'Raw data'/a.pcap _read_once:=true" />
 -->
 <launch>
 
+    <node pkg="rosbag" type="record" name="record" 
+    args="record -O a.bag /velodyne_points /scan /velodyne_packets" />
 
     <node pkg="velodyne_driver" type="velodyne_node" name="velodyne_node"
     args="_model:=VLP16 _pcap:=/home/ali/catkin_ws/src/dedusting_filter/lidar_sensing/Data/'Raw data'/a.pcap _read_once:=true" />
-    
+
+    <node pkg="velodyne_pointcloud" type="transform_node" name="transform_node"
+    args="_model:=VLP16" />
+
+     <node pkg="velodyne_laserscan" type="velodyne_laserscan_node" name="velodyne_laserscan_node"
+    args="_model:=VLP16" />
+
+
+
 </launch>

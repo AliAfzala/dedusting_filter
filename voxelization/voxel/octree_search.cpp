@@ -105,6 +105,7 @@ std::cout << searchPoint.size()<< std::endl;
         EigenSolver< Matrix<double,Dynamic,3> > es(voxel_points.transpose()*voxel_points);      
         MatrixXd D = es.pseudoEigenvalueMatrix();
         MatrixXd V = es.pseudoEigenvectors();  
+        std::cout << D << std::endl;
 
         double voxel_roughness = std::abs(D(2,2)); 
         double voxel_slope = std::sin( V(2,2)/ V.col(2).norm() );
