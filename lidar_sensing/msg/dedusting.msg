@@ -5,3 +5,4 @@ float32[] voxel_eigen3OverEigen1
 float32[] voxel_eigen2OverEigen1
 float32[] voxel_eigen1OverSumEigen
 geometry_msgs/Point[] point
+uint32 voxel_number

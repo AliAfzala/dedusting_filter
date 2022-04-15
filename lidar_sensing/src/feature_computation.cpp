@@ -62,7 +62,7 @@ using namespace Eigen;
 
     // Voxelization using octree lib
 
-  float resolution = 0.20f;
+  float resolution = 0.25f;
   pcl::octree::OctreePointCloudSearch<pcl::PointXYZI> octree (resolution);
   octree.setInputCloud (cloudXYZICropped);
   octree.addPointsFromInputCloud ();
@@ -73,7 +73,7 @@ using namespace Eigen;
   std::vector<int> pointIdxVec;
   std::vector<int> voxel_intensity;
   lidar_sensing::dedusting features;
-
+  features.voxel_number = searchPoint.size();
 
   for (int j = 0; j < searchPoint.size(); ++j)
   {
@@ -184,10 +184,10 @@ using namespace Eigen;
     ROS_INFO_STREAM("Hello from feature Node: " << ros::this_node::getName());
 
     // Create a ROS Subscriber to IMAGE_TOPIC with a queue_size of 1 and a callback function to cloud_cb
-    ros::Subscriber sub = nh.subscribe(IMAGE_TOPIC,5, cloud_cb);
+    ros::Subscriber sub = nh.subscribe(IMAGE_TOPIC,10, cloud_cb);
 
     // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
-    pub = nh.advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 5);
+    pub = nh.advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 10);
 
     // Spin
     ros::spin();
