@@ -18,6 +18,7 @@
 #include<algorithm>
 #include<chrono>
 #include <ros/console.h>
+#include <geometry_msgs/Point.h>
 
   // Include PointCloud2 message
 #include <sensor_msgs/PointCloud2.h>
@@ -79,6 +80,10 @@ using namespace Eigen;
     if ( (octree.voxelSearch (searchPoint[j], pointIdxVec)) && (pointIdxVec.size() > 3))
       {
         float distance = sqrt(std::pow(searchPoint[j].x,2) + std::pow(searchPoint[j].y,2)) ;
+        geometry_msgs::Point point ;
+        point.x = searchPoint[j].x;
+        point.y = searchPoint[j].y;
+        point.z = searchPoint[j].z;
         int sz = pointIdxVec.size();
         //std::cout<< " number of points inside voxel is " << sz << std::endl ; 
         Matrix<double,Dynamic,3> voxel_points;
@@ -105,19 +110,22 @@ using namespace Eigen;
         MatrixXd D = es.pseudoEigenvalueMatrix();
         MatrixXd V = es.pseudoEigenvectors();  
 
-        double voxel_roughness = std::abs(D(2,2)); 
-        double voxel_slope = std::sin( V(2,2)/ V.col(2).norm() );
+        //double voxel_roughness = std::abs(D(2,2)); 
+        //double voxel_slope = std::sin( V(2,2)/ V.col(2).norm() );
         double sum = std::accumulate(voxel_intensity.begin(), voxel_intensity.end(), 0.0);
         double voxel_intensity_mean = sum / voxel_intensity.size();
         double sq_sum = std::inner_product(voxel_intensity.begin(), voxel_intensity.end(), voxel_intensity.begin(), 0.0);
         double voxel_intensity_std = std::sqrt(sq_sum / voxel_intensity.size() - voxel_intensity_mean *voxel_intensity_mean);
-        
+        float eigen3OverEigen1 = D(2,2)/D(0,0);
+        float eigen2OverEigen1 = D(1,1)/D(0,0);
+        float eigen1OverSumEigen = D(0,0)/D.cwiseAbs().diagonal().sum();
         features.voxel_mean_intensity.push_back(voxel_intensity_mean);
         features.voxel_std_intensity.push_back(voxel_intensity_std);
-        features.voxel_eigen3OverEigen1.push_back(D(2,2)/D(0,0));
-        features.voxel_eigen2OverEigen1.push_back(D(1,1)/D(0,0));
-        features.voxel_eigen1OverSumEigen.push_back(D(0,0)/D.cwiseAbs().diagonal().sum());
+        features.voxel_eigen3OverEigen1.push_back(eigen3OverEigen1);
+        features.voxel_eigen2OverEigen1.push_back(eigen2OverEigen1);
+        features.voxel_eigen1OverSumEigen.push_back(eigen1OverSumEigen);
         features.voxel_numberOverDis.push_back(sz/distance);
+        features.point.push_back(point);
         //features.voxel_slope.push_back(voxel_slope);
         //features.voxel_roughness.push_back(voxel_roughness);
 
@@ -176,10 +184,10 @@ using namespace Eigen;
     ROS_INFO_STREAM("Hello from feature Node: " << ros::this_node::getName());
 
     // Create a ROS Subscriber to IMAGE_TOPIC with a queue_size of 1 and a callback function to cloud_cb
-    ros::Subscriber sub = nh.subscribe(IMAGE_TOPIC, 50, cloud_cb);
+    ros::Subscriber sub = nh.subscribe(IMAGE_TOPIC,5, cloud_cb);
 
     // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
-    pub = nh.advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 50);
+    pub = nh.advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 5);
 
     // Spin
     ros::spin();
