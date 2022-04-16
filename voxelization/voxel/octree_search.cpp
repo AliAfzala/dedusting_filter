@@ -12,6 +12,8 @@
 #include<iterator>
 #include<algorithm>
 #include<chrono>
+#include"opencv2/core.hpp"
+
 using namespace std::chrono;
 
 using namespace Eigen;
@@ -83,6 +85,8 @@ std::cout << searchPoint.size()<< std::endl;
         //VectorXd voxel_intensity ; 
         //Matrix<float,Dynamic,1> voxel_intensity;
         //voxel_intensity.resize(sz,1);
+        pcl::PointXYZI p;
+        
 
         
         for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
@@ -107,8 +111,8 @@ std::cout << searchPoint.size()<< std::endl;
         MatrixXd V = es.pseudoEigenvectors();  
         std::cout << D << std::endl;
 
-        double voxel_roughness = std::abs(D(2,2)); 
-        double voxel_slope = std::sin( V(2,2)/ V.col(2).norm() );
+        //double voxel_roughness = std::abs(D(2,2)); 
+        //double voxel_slope = std::sin( V(2,2)/ V.col(2).norm() );
         //std::cout << " Voxel number " << ii << std::endl; 
         //std::cout << " Voxel roughness is:  " << voxel_roughness << std::endl ;  
         //std::cout << " Voxel slope is:  "<< voxel_slope << std::endl ;
