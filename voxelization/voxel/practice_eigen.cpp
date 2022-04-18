@@ -1,10 +1,10 @@
-#include <eigen-3.4.0/Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include<iostream>
-#include<eigen-3.4.0/Eigen/Eigenvalues>
+#include<eigen3/Eigen/Eigenvalues>
 #include <chrono>
 #include<iterator>
 #include<algorithm>
-
+#include<Eigen/Dense>
 
 
 using namespace Eigen;
@@ -26,6 +26,7 @@ void Eig()
   std::cout << A << std::endl;
   std::cout << " The mean of column 1" << A.col(0).array().mean() << std::endl;
 
+/*
 for(auto vec : A.array().colwise())
 {
 
@@ -34,9 +35,9 @@ cout << "Here is the std:\n" << std_dev << "\n";
 
 }
 
- 
+ */
 
-auto start = high_resolution_clock::now();
+//auto start = high_resolution_clock::now();
 
 
 
@@ -44,10 +45,10 @@ auto start = high_resolution_clock::now();
  
  Matrix3d D = es.pseudoEigenvalueMatrix();
  Matrix3d V = es.pseudoEigenvectors();
- auto stop = high_resolution_clock::now();
- auto duration = duration_cast<microseconds>(stop - start);
- cout << "Time taken by PCA function: "
-         << duration.count() << " microseconds" << endl;
+ //auto stop = high_resolution_clock::now();
+ //auto duration = duration_cast<microseconds>(stop - start);
+ //cout << "Time taken by PCA function: "
+  //       << duration.count() << " microseconds" << endl;
 
  cout << "The pseudo-eigenvalue matrix D is:" << endl << D << endl;
  cout << " The sum over diagnal is : " << D.cwiseAbs().diagonal().sum() << endl ; 
@@ -59,6 +60,23 @@ int col_index, row_index;
 cout << D.maxCoeff(&row_index, &col_index) << endl;
 cout << row_index << " " << col_index << endl;
 cout<< 1/2 << endl;
+/*
+auto start = high_resolution_clock::now();
+JacobiSVD<MatrixXd> svd(A);
+MatrixXd D1 =svd.singularValues();
+auto stop = high_resolution_clock::now();
+ auto duration = duration_cast<microseconds>(stop - start);
+ cout << "Time taken by PCA function: "
+      << duration.count() << " microseconds" << endl;
+cout << "Its singular values are:" << endl << D1(0) << endl;
+*/
+auto start = high_resolution_clock::now();
+BDCSVD<MatrixXd> svd(A);
+std::cout << svd.singularValues() << endl;
+auto stop = high_resolution_clock::now();
+ auto duration = duration_cast<microseconds>(stop - start);
+ cout << "Time taken by PCA function: "
+      << duration.count() << " microseconds" << endl;
 
 }
 int main()

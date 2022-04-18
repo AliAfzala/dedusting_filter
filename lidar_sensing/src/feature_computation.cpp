@@ -14,8 +14,8 @@
 #include <pcl/filters/crop_box.h>
 #include<eigen3/Eigen/Eigenvalues>
 #include<cmath>
-#include<iterator>
-#include<algorithm>
+//#include<iterator>
+//#include<algorithm>
 #include<chrono>
 #include <ros/console.h>
 #include <geometry_msgs/Point.h>
@@ -40,7 +40,7 @@ using namespace Eigen;
     pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloudXYZI(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloudXYZICropped (new pcl::PointCloud<pcl::PointXYZI>);
-    ROS_INFO_STREAM("Hello from feature Node: " << ros::this_node::getName());
+    //ROS_INFO_STREAM("Hello from feature Node: " << ros::this_node::getName());
     //pcl::PointCloud<pcl::PointXYZI> *cloudXYZI = new pcl::PointCloud<pcl::PointXYZI>;
     //pcl::PointCloud<pcl::PointXYZI>::ConstPtr cloudXYZIPtr(cloudXYZI);
     //pcl::PCLPointCloud2ConstPtr cloudPtr(cloud);
@@ -52,7 +52,7 @@ using namespace Eigen;
 
     //   Croping the point cloud 
     double minX = 0; double minY = -10; double minZ = -3;
-    double maxX = 20 ; double maxY = 20 ; double maxZ = 3 ;
+    double maxX = 15 ; double maxY = 10 ; double maxZ = 3 ;
     pcl::CropBox<pcl::PointXYZI> boxFilter;
     boxFilter.setMin(Eigen::Vector4f(minX, minY, minZ, 1.0));
     boxFilter.setMax(Eigen::Vector4f(maxX, maxY, maxZ, 1.0));
@@ -107,8 +107,11 @@ using namespace Eigen;
             } 
 
         //auto start = high_resolution_clock::now();
-        EigenSolver< Matrix<double,Dynamic,3> > es(voxel_points.transpose()*voxel_points);      
-        MatrixXd D = es.pseudoEigenvalueMatrix();
+        JacobiSVD<MatrixXd> svd(voxel_points.transpose()*voxel_points);
+        MatrixXd D =svd.singularValues();
+
+        //EigenSolver< Matrix<double,Dynamic,3> > es(voxel_points.transpose()*voxel_points);      
+        //MatrixXd D = es.pseudoEigenvalueMatrix();
         //auto stop = high_resolution_clock::now();
         //auto duration = duration_cast<microseconds>(stop - start);
         //ROS_INFO_STREAM( "Time for computing features : " << duration.count()*features.voxel_number);
@@ -125,15 +128,16 @@ using namespace Eigen;
         //float eigen1OverSumEigen = D(0,0)/D.cwiseAbs().diagonal().sum();
         features.voxel_mean_intensity.push_back(voxel_intensity_mean);
         features.voxel_std_intensity.push_back(voxel_intensity_std);
-        features.voxel_eigen3OverEigen1.push_back(D(2,2)/D(0,0));
-        features.voxel_eigen2OverEigen1.push_back(D(1,1)/D(0,0));
-        features.voxel_eigen1OverSumEigen.push_back(D(0,0)/D.cwiseAbs().diagonal().sum());
+        features.voxel_eigen3OverEigen1.push_back(D(2)/D(0));
+        features.voxel_eigen2OverEigen1.push_back(D(1)/D(0));
+        features.voxel_eigen1OverSumEigen.push_back(D(0)/(D(0)+D(1)+D(2)));
         features.voxel_numberOverDis.push_back(sz/distance);
         features.point.push_back(point);
         //features.voxel_slope.push_back(voxel_slope);
         //features.voxel_roughness.push_back(voxel_roughness);
 
         pointIdxVec.clear();
+        voxel_intensity.clear();
 
         
         }

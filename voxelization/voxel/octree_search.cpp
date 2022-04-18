@@ -12,7 +12,6 @@
 #include<iterator>
 #include<algorithm>
 #include<chrono>
-#include"opencv2/core.hpp"
 
 using namespace std::chrono;
 
