@@ -30,7 +30,7 @@ public:
     std::vector<int> pointIdxVec;
     std::vector<int> voxel_intensity;
     lidar_sensing::dedusting features;
-   // lidar_sensing::dedusting *features1 = new lidar_sensing::dedusting;
+    lidar_sensing::dedusting *features1 = new lidar_sensing::dedusting;
     geometry_msgs::Point point ;
     double sum ;
     double voxel_intensity_mean ;
@@ -108,7 +108,8 @@ public:
         auto duration = duration_cast<microseconds>(stop - start);
         ROS_INFO_STREAM( "Time for computing features : " << duration.count());
         //feat = features;
-        pub.publish (features);
+        //pub.publish (features);
+        *features1 = features;
         reset();
     
 
@@ -126,12 +127,12 @@ public:
         boxFilter.filter(*cloudXYZICropped);
     }
    
-   /*
+   
     void publishFeatures()
     {
-        pub.publish(features);
+        pub.publish(*features1);
     }
-    */
+    
 
 
     void reset()
@@ -167,11 +168,11 @@ int main(int argc, char **argv)
 
                        */
     // Create a ROS timer for publishing temperature
-    /*
+    
     ros::Timer timerPublishTemperature =
         nh.createTimer(ros::Duration(1.0 / 20.0),
                    std::bind(&FeatureComputation::publishFeatures, fc));
-                   */
+                   
     // We can now use spin, or do whatever 
     // we want in this node
     ros::spin();
