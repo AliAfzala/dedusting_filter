@@ -18,8 +18,6 @@
 #include <sensor_msgs/PointCloud2.h>
 
   // Topics
-static const std::string IMAGE_TOPIC = "velodyne_points";
-static const std::string PUBLISH_TOPIC = "feature_topics";
 
 using namespace std::chrono;
 using namespace Eigen;
@@ -32,6 +30,7 @@ public:
     std::vector<int> pointIdxVec;
     std::vector<int> voxel_intensity;
     lidar_sensing::dedusting features;
+   // lidar_sensing::dedusting *features1 = new lidar_sensing::dedusting;
     geometry_msgs::Point point ;
     double sum ;
     double voxel_intensity_mean ;
@@ -39,19 +38,22 @@ public:
     double voxel_intensity_std; 
     double distance ;
     int sz;
+    const std::string IMAGE_TOPIC = "velodyne_points";
+    const std::string PUBLISH_TOPIC = "feature_topics";
     FeatureComputation(ros::NodeHandle *nh) 
     {
         // Initialize temperature and ROS publisher
-        sub = nh->subscribe<sensor_msgs::PointCloud2>(IMAGE_TOPIC,1,readLidarData);
+        sub = nh->subscribe(IMAGE_TOPIC,1,&FeatureComputation::readLidarData,this);
 
         // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
-        pub = nh->advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 5);
-        minX = 0 , minY = -10 ,minZ = -3 , maxX = 15 , maxY = 10 , maxZ = 3 ;
+        pub = nh->advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 1);
+        minX = 0.0 ; minY = -10.0 ;minZ = -3.0 ; maxX = 15.0 ; maxY = 10.0 ; maxZ = 3.0 ;
         resolution = 0.30f;
 
     }
-    void readLidarData(const sensor_msgs::PointCloud2 cloud_msg,lidar_sensing::dedusting &feat)
+    void readLidarData(const sensor_msgs::PointCloud2 cloud_msg )
     {
+        auto start = high_resolution_clock::now();
         pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2;
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloudXYZI(new pcl::PointCloud<pcl::PointXYZI>);
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloudXYZICropped (new pcl::PointCloud<pcl::PointXYZI>);
@@ -102,9 +104,13 @@ public:
             }
             
         }
-        feat = features;
-        //pub.publish (features);
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        ROS_INFO_STREAM( "Time for computing features : " << duration.count());
+        //feat = features;
+        pub.publish (features);
         reset();
+    
 
     }
 
@@ -119,10 +125,14 @@ public:
         boxFilter.setInputCloud(cloudXYZI);
         boxFilter.filter(*cloudXYZICropped);
     }
-    void publishFeatures(lidar_sensing::dedusting msg)
+   
+   /*
+    void publishFeatures()
     {
-        pub.publish(msg);
+        pub.publish(features);
     }
+    */
+
 
     void reset()
     {
@@ -142,21 +152,28 @@ private:
 };
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "feature_node");
+    ros::init(argc, argv, "feature_node_classVersion");
     ros::NodeHandle nh;
     // Create an instance of Temperature sensor
-    FeatureComputation featureComputation(&nh);
+    FeatureComputation fc = FeatureComputation(&nh);
     // Create a ROS timer for reading data
     // the callback function for the Timer must
     // be bound with std::bind or boost::bind
+    
+    /*
     ros::Timer timerReadTemperature =
         nh.createTimer(ros::Duration(1.0 / 10.0),
                        std::bind(&FeatureComputation::readLidarData, featureComputation));
+
+                       */
     // Create a ROS timer for publishing temperature
+    /*
     ros::Timer timerPublishTemperature =
-        nh.createTimer(ros::Duration(1.0 / 10.0),
-                       std::bind(&FeatureComputation::publishTemperature, featureComputation));
+        nh.createTimer(ros::Duration(1.0 / 20.0),
+                   std::bind(&FeatureComputation::publishFeatures, fc));
+                   */
     // We can now use spin, or do whatever 
     // we want in this node
     ros::spin();
+    return 0;
 }
