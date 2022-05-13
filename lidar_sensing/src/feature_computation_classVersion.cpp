@@ -48,7 +48,7 @@ public:
         // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
         pub = nh->advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 1);
         minX = 0.0 ; minY = -10.0 ;minZ = -3.0 ; maxX = 15.0 ; maxY = 10.0 ; maxZ = 3.0 ;
-        resolution = 0.30f;
+        resolution = 0.25f;
 
     }
     void readLidarData(const sensor_msgs::PointCloud2 cloud_msg )
@@ -68,10 +68,10 @@ public:
         features.voxel_number = searchPoint.size();
         for (int j = 0; j < features.voxel_number; ++j)
         {
-            if ( (octree.voxelSearch (searchPoint[j], pointIdxVec)) && (pointIdxVec.size() > 3))
+            if ( (octree.voxelSearch (searchPoint[j], pointIdxVec)) && (pointIdxVec.size() > 10))
             {
                 sz = pointIdxVec.size();
-                Matrix<double,Dynamic,3> voxel_points;
+                Matrix<long double,Dynamic,3> voxel_points;
                 voxel_points.conservativeResize(sz,3);
                 for (std::size_t i = 0; i < pointIdxVec.size (); ++i)
                 {
@@ -80,9 +80,11 @@ public:
                     voxel_points(i,2)= ( (*cloudXYZICropped)[pointIdxVec[i]].z);
                     voxel_intensity.push_back((*cloudXYZI)[pointIdxVec[i]].intensity);
                 }
+                Matrix<long double, Dynamic, Dynamic> centered = voxel_points.rowwise() - voxel_points.colwise().mean();
+                Matrix<long double, Dynamic, Dynamic> cov = (centered.adjoint() * centered) / double(voxel_points.rows() - 1);
 
-                JacobiSVD<MatrixXd> svd(voxel_points.transpose()*voxel_points);
-                MatrixXd D =svd.singularValues();
+                JacobiSVD<Matrix<long double, Dynamic, Dynamic>> svd(cov);
+                Matrix<long double, Dynamic, Dynamic> D =svd.singularValues();
                 sum = std::accumulate(voxel_intensity.begin(), voxel_intensity.end(), 0.0);
                 voxel_intensity_mean = sum / voxel_intensity.size();
                 sq_sum = std::inner_product(voxel_intensity.begin(), voxel_intensity.end(), voxel_intensity.begin(), 0.0);
@@ -93,10 +95,10 @@ public:
                 point.z = searchPoint[j].z;
                 features.voxel_mean_intensity.push_back(voxel_intensity_mean);
                 features.voxel_std_intensity.push_back(voxel_intensity_std);
-                features.voxel_eigen3OverEigen1.push_back(D(2)/D(0));
-                features.voxel_eigen2OverEigen1.push_back(D(1)/D(0));
-                features.voxel_eigen1OverSumEigen.push_back(D(0)/(D(0)+D(1)+D(2)));
-                features.voxel_numberOverDis.push_back(sz/distance);
+                features.voxel_eigen3OverEigen1.push_back(double (std::abs(D(2)/D(0))));
+                features.voxel_eigen2OverEigen1.push_back(double(std::abs(D(1)/D(0))));
+                features.voxel_eigen1OverSumEigen.push_back(double (D(2)/((std::abs( D(0) ) + std::abs( D(1) ) + std::abs( D(2) ) ) ) ));
+                features.voxel_numberOverDis.push_back(double(sz/distance));
                 features.point.push_back(point);
                 pointIdxVec.clear();
                 voxel_intensity.clear();
