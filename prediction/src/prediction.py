@@ -20,7 +20,7 @@ class RosTensorFlow():
         self._pub = rospy.Publisher('visualization_topics', Marker, queue_size=1)
         #self._pub1 = rospy.Publisher('visualization_topics', Marker, queue_size=1)
         #self._scaler = load(open('/home/ali/AutonmousExcavator/models/Scaler/scaler2022_04_26-01:33:35_PM.pkl', 'rb'))
-        self._scaler = load(open('/home/ali/AutonmousExcavator/models/Scaler/scaler.pkl', 'rb'))
+        self._scaler = load(open('/home/ali/AutonmousExcavator/models/Scaler/scaler2022_05_13-07:44:03_PM.pkl', 'rb'))
 
     def callback(self, dedusting_features=dedusting()):
         features = np.stack((np.asarray(dedusting_features.voxel_mean_intensity),

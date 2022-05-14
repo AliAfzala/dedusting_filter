@@ -47,7 +47,7 @@ public:
 
         // Create a ROS publisher to PUBLISH_TOPIC with a queue_size of 1
         pub = nh->advertise<lidar_sensing::dedusting>(PUBLISH_TOPIC, 1);
-        minX = 0.0 ; minY = -10.0 ;minZ = -3.0 ; maxX = 15.0 ; maxY = 10.0 ; maxZ = 3.0 ;
+        minX = -20.0 ; minY = -20.0 ;minZ = -3.0 ; maxX = 20.0 ; maxY = 20.0 ; maxZ = 3.0 ;
         resolution = 0.25f;
 
     }
@@ -97,7 +97,7 @@ public:
                 features.voxel_std_intensity.push_back(voxel_intensity_std);
                 features.voxel_eigen3OverEigen1.push_back(double (std::abs(D(2)/D(0))));
                 features.voxel_eigen2OverEigen1.push_back(double(std::abs(D(1)/D(0))));
-                features.voxel_eigen1OverSumEigen.push_back(double (D(2)/((std::abs( D(0) ) + std::abs( D(1) ) + std::abs( D(2) ) ) ) ));
+                features.voxel_eigen1OverSumEigen.push_back(double (std::abs(D(0))/((std::abs( D(0) ) + std::abs( D(1) ) + std::abs( D(2) ) ) ) ));
                 features.voxel_numberOverDis.push_back(double(sz/distance));
                 features.point.push_back(point);
                 pointIdxVec.clear();
